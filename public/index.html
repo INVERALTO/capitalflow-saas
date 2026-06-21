@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CapitalFlow — Administración de Créditos e Inversiones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* === RESET & VARIABLES === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-primary: #0a0c10;
+  --bg-secondary: #12151c;
+  --bg-card: #181c26;
+  --bg-card-hover: #1e2330;
+  --bg-input: #1a1e28;
+  --border: #2a2f3e;
+  --border-focus: #c9a84c;
+  --gold: #c9a84c;
+  --gold-light: #e0c76e;
+  --gold-dim: rgba(201,168,76,0.15);
+  --text-primary: #e8e6e1;
+  --text-secondary: #8a8d98;
+  --text-muted: #555a68;
+  --success: #3ecf8e;
+  --danger: #f0544f;
+  --warning: #f5a623;
+  --info: #4da3ff;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.6);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { font-size: 15px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === LOGIN PAGE === */
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  opacity: 1;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.login-page.hidden {
+  opacity: 0;
+  transform: scale(0.97);
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.login-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.login-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(77,163,255,0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+.login-left::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 80px,
+    rgba(201,168,76,0.015) 80px,
+    rgba(201,168,76,0.015) 81px
+  );
+  pointer-events: none;
+  animation: patternDrift 30s linear infinite;
+}
+@keyframes patternDrift {
+  to { transform: translate(40px, 40px); }
+}
+
+.login-brand {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  animation: fadeInUp 0.8s ease both;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.login-brand .logo-mark {
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--gold);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.login-brand .logo-mark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--gold-dim), transparent);
+}
+.login-brand .logo-mark svg { position: relative; z-index: 1; }
+.login-brand h1 {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+.login-brand h1 span { color: var(--gold); }
+.login-brand p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 360px;
+}
+.login-brand .features {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.login-brand .feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.login-brand .feature-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--gold-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+.login-form-wrapper {
+  width: 100%;
+  max-width: 400px;
+  animation: fadeInUp 0.8s ease 0.15s both;
+}
+.login-form-wrapper h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+.login-form-wrapper .subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+.form-group input::placeholder { color: var(--text-muted); }
+.form-group input:focus, .form-group select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+.tenant-input-wrapper {
+  position: relative;
+}
+.tenant-input-wrapper .tenant-prefix {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gold);
+  font-size: 0.85rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+.tenant-input-wrapper input {
+  padding-left: 2.2rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.form-row label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.form-row label input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 15px;
+  height: 15px;
+}
+.form-row a {
+  font-size: 0.85rem;
+  color: var(--gold);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.form-row a:hover { color: var(--gold-light); }
+
+.btn-login {
+  width: 100%;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, var(--gold), #b8973f);
+  color: #0a0c10;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.btn-login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.15));
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.btn-login:hover::before { opacity: 1; }
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,168,76,0.3); }
+.btn-login:active { transform: translateY(0); }
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.login-divider::before, .login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.login-error {
+  background: rgba(240,84,79,0.1);
+  border: 1px solid rgba(240,84,79,0.3);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  display: none;
+  animation: shake 0.4s ease;
+}
+.login-error.show { display: flex; align-items: center; gap: 0.5rem; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* === DASHBOARD === */
+.dashboard {
+  display: none;
+  min-height: 100vh;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.dashboard.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  transition: transform var(--transition);
+}
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.sidebar-header .s-logo {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--gold);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gold-dim);
+}
+.sidebar-header .s-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.sidebar-header .s-title span { color: var(--gold); }
+
+.sidebar-tenant {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(201,168,76,0.03);
+}
+.sidebar-tenant .tenant-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+.sidebar-tenant .tenant-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--gold);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  overflow-y: auto;
+}
+.nav-section-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 0.75rem 0.75rem 0.5rem;
+  margin-top: 0.5rem;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.9rem;
+  position: relative;
+}
+.nav-item:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+.nav-item.active {
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 3px;
+  background: var(--gold);
+  border-radius: 0 3px 3px 0;
+}
+.nav-item svg { flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--gold);
+  color: var(--bg-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+}
+
+.sidebar-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.sidebar-user .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold), #b8973f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--bg-primary);
+}
+.sidebar-user .user-info { flex: 1; }
+.sidebar-user .user-name { font-size: 0.85rem; font-weight: 500; }
+.sidebar-user .user-role { font-size: 0.75rem; color: var(--text-muted); }
+.btn-logout {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  transition: all var(--transition);
+}
+.btn-logout:hover { color: var(--danger); background: rgba(240,84,79,0.1); }
+
+/* Main content */
+.main-content {
+  flex: 1;
+  margin-left: 260px;
+  min-height: 100vh;
+}
+
+/* Top bar */
+.topbar {
+  height: 64px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: var(--bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.topbar-left h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.breadcrumb span { color: var(--text-secondary); }
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.topbar-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+.topbar-btn:hover { border-color: var(--gold); color: var(--gold); }
+.topbar-btn .notif-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  background: var(--danger);
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+}
+
+/* Page content */
+.page-content {
+  padding: 2rem;
+}
+.page-section { display: none; }
+.page-section.active { display: block; animation: fadeInUp 0.4s ease both; }
+
+/* Stats cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.stat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-2px); }
+.stat-card:hover::before { opacity: 1; }
+.stat-card .stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.stat-card .stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stat-card .stat-icon.gold { background: var(--gold-dim); color: var(--gold); }
+.stat-card .stat-icon.green { background: rgba(62,207,142,0.12); color: var(--success); }
+.stat-card .stat-icon.blue { background: rgba(77,163,255,0.12); color: var(--info); }
+.stat-card .stat-icon.red { background: rgba(240,84,79,0.12); color: var(--danger); }
+.stat-card .stat-change {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+.stat-card .stat-change.up { background: rgba(62,207,142,0.12); color: var(--success); }
+.stat-card .stat-change.down { background: rgba(240,84,79,0.12); color: var(--danger); }
+.stat-card .stat-value {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.stat-card .stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Content grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.card-header .card-action {
+  font-size: 0.8rem;
+  color: var(--gold);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+.card-header .card-action:hover { color: var(--gold-light); }
+.card-body { padding: 1.5rem; }
+
+/* Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+.data-table td {
+  padding: 0.85rem 0;
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(42,47,62,0.5);
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { color: var(--gold); }
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.status-badge.active { background: rgba(62,207,142,0.12); color: var(--success); }
+.status-badge.pending { background: rgba(245,166,35,0.12); color: var(--warning); }
+.status-badge.overdue { background: rgba(240,84,79,0.12); color: var(--danger); }
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Activity list */
+.activity-list { display: flex; flex-direction: column; gap: 1rem; }
+.activity-item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.activity-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+  position: relative;
+}
+.activity-dot::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 4px;
+  width: 2px;
+  height: calc(100% + 12px);
+  background: var(--border);
+}
+.activity-item:last-child .activity-dot::after { display: none; }
+.activity-dot.gold { background: var(--gold); }
+.activity-dot.green { background: var(--success); }
+.activity-dot.blue { background: var(--info); }
+.activity-dot.red { background: var(--danger); }
+.activity-text { font-size: 0.88rem; line-height: 1.5; }
+.activity-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .content-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .login-left { display: none; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* === SUPER ADMIN PANEL === */
+.superadmin {
+  display: none;
+  min-height: 100vh;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.superadmin.active {
+  display: flex;
+  opacity: 1;
+}
+.superadmin .sidebar {
+  background: linear-gradient(180deg, #0d1117 0%, #111820 100%);
+}
+.superadmin .sidebar-tenant {
+  background: rgba(77,163,255,0.06);
+  border-bottom-color: rgba(77,163,255,0.15);
+}
+.superadmin .sidebar-tenant .tenant-name {
+  color: var(--info);
+}
+.superadmin .sidebar-tenant .tenant-label {
+  color: var(--info);
+  opacity: 0.6;
+}
+.sa-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(77,163,255,0.12);
+  color: var(--info);
+  margin-top: 0.25rem;
+}
+
+/* Tenant cards grid */
+.tenants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.tenant-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.tenant-card:hover {
+  border-color: rgba(77,163,255,0.3);
+  transform: translateY(-2px);
+}
+.tenant-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+.tenant-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.tenant-card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--bg-primary);
+}
+.tenant-card-avatar.c1 { background: linear-gradient(135deg, #c9a84c, #b8973f); }
+.tenant-card-avatar.c2 { background: linear-gradient(135deg, #4da3ff, #3b82f6); }
+.tenant-card-avatar.c3 { background: linear-gradient(135deg, #3ecf8e, #22c55e); }
+.tenant-card-avatar.c4 { background: linear-gradient(135deg, #f5a623, #e09915); }
+.tenant-card-avatar.c5 { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+.tenant-card-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: 0.15rem;
+}
+.tenant-card-id {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+.tenant-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.tenant-status.online { background: rgba(62,207,142,0.12); color: var(--success); }
+.tenant-status.suspended { background: rgba(240,84,79,0.12); color: var(--danger); }
+.tenant-status.trial { background: rgba(245,166,35,0.12); color: var(--warning); }
+.tenant-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.tenant-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.tenant-stat {
+  text-align: center;
+  padding: 0.65rem 0;
+  background: var(--bg-primary);
+  border-radius: 8px;
+}
+.tenant-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+.tenant-stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tenant-card-footer {
+  display: flex;
+  gap: 0.5rem;
+}
+.tenant-card-footer .btn-tenant-action {
+  flex: 1;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.tenant-card-footer .btn-tenant-action:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.tenant-card-footer .btn-tenant-action.primary {
+  background: var(--gold-dim);
+  border-color: rgba(201,168,76,0.3);
+  color: var(--gold);
+}
+.tenant-card-footer .btn-tenant-action.primary:hover {
+  background: rgba(201,168,76,0.25);
+}
+
+/* Create tenant modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.show {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlide 0.3s ease;
+}
+@keyframes modalSlide {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 6px;
+  transition: all var(--transition);
+}
+.modal-close:hover { color: var(--text-primary); background: var(--bg-primary); }
+.modal-body { padding: 1.5rem; }
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+.btn-modal {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid var(--border);
+}
+.btn-modal.cancel {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+.btn-modal.cancel:hover { border-color: var(--text-muted); color: var(--text-primary); }
+.btn-modal.confirm {
+  background: linear-gradient(135deg, var(--gold), #b8973f);
+  color: var(--bg-primary);
+  border: none;
+  font-weight: 600;
+}
+.btn-modal.confirm:hover { box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+
+/* Super admin login toggle */
+.login-mode-toggle {
+  display: flex;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 1.5rem;
+}
+.login-mode-btn {
+  flex: 1;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font-body);
+}
+.login-mode-btn.active {
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+.login-mode-btn:hover:not(.active) {
+  color: var(--text-secondary);
+}
+
+/* Loading spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top-color: var(--bg-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ========== LOGIN PAGE ========== -->
+<div class="login-page" id="loginPage">
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="logo-mark">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <h1>Capital<span>Flow</span></h1>
+      <p>Plataforma SaaS para la administración integral de créditos, inversiones y gestión de intereses.</p>
+      <div class="features">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          Seguridad multi-tenant con cifrado de extremo a extremo
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          Control de cuotas, intereses y vencimientos en tiempo real
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          Reportes financieros y seguimiento de inversiones
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="login-form-wrapper">
+      <h2>Iniciar sesión</h2>
+      <p class="subtitle">Accede a tu panel de administración</p>
+
+      <div class="login-mode-toggle">
+        <button type="button" class="login-mode-btn active" data-mode="tenant" onclick="setLoginMode('tenant')">Empresa cliente</button>
+        <button type="button" class="login-mode-btn" data-mode="superadmin" onclick="setLoginMode('superadmin')">Super Admin</button>
+      </div>
+
+      <div class="login-error" id="loginError">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <span id="loginErrorText">Credenciales incorrectas</span>
+      </div>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="form-group" id="tenantGroup">
+          <label id="tenantLabel">Identificador de empresa</label>
+          <div class="tenant-input-wrapper">
+            <span class="tenant-prefix" id="tenantPrefix">CF/</span>
+            <input type="text" id="tenantId" placeholder="ej: miempresa" required autocomplete="off">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" id="loginEmail" placeholder="admin@empresa.com" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required>
+        </div>
+        <div class="form-row">
+          <label><input type="checkbox" id="rememberMe"> Recordarme</label>
+          <a href="#">¿Olvidaste tu contraseña?</a>
+        </div>
+        <button type="submit" class="btn-login" id="btnLogin">
+          Acceder al sistema
+        </button>
+      </form>
+
+      <div class="login-divider">o</div>
+      <p style="text-align:center; font-size:0.82rem; color:var(--text-muted);">
+        ¿No tienes cuenta? <a href="#" style="color:var(--gold); text-decoration:none;">Solicita una demo</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div class="dashboard" id="dashboard">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="s-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="s-title">Capital<span>Flow</span></div>
+    </div>
+    <div class="sidebar-tenant">
+      <div class="tenant-label">Empresa conectada</div>
+      <div class="tenant-name" id="tenantDisplay">CF/ —</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Principal</div>
+      <div class="nav-item active" data-page="dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-page="credits">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        Créditos
+        <span class="nav-badge">12</span>
+      </div>
+      <div class="nav-item" data-page="investments">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Inversiones
+      </div>
+      <div class="nav-item" data-page="clients">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clientes
+      </div>
+
+      <div class="nav-section-title">Finanzas</div>
+      <div class="nav-item" data-page="payments">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Pagos
+      </div>
+      <div class="nav-item" data-page="interest">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Intereses
+      </div>
+      <div class="nav-item" data-page="reports">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Reportes
+      </div>
+
+      <div class="nav-section-title">Sistema</div>
+      <div class="nav-item" data-page="settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configuración
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar" id="userAvatar">AD</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">Administrador</div>
+          <div class="user-role">Admin principal</div>
+        </div>
+        <button class="btn-logout" id="btnLogout" title="Cerrar sesión">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-btn" id="menuToggle" style="display:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div>
+          <h2 id="pageTitle">Dashboard</h2>
+          <div class="breadcrumb">
+            CapitalFlow <span>/</span> <span id="breadcrumbPage">Dashboard</span>
+          </div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Buscar">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button class="topbar-btn" title="Notificaciones">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <!-- DASHBOARD HOME -->
+      <section class="page-section active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon gold">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <span class="stat-change up">+12.5%</span>
+            </div>
+            <div class="stat-value">$2,450,000</div>
+            <div class="stat-label">Capital prestado activo</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <span class="stat-change up">+8.3%</span>
+            </div>
+            <div class="stat-value">$185,400</div>
+            <div class="stat-label">Intereses generados (mes)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <span class="stat-change up">+3</span>
+            </div>
+            <div class="stat-value">47</div>
+            <div class="stat-label">Créditos activos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon red">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <span class="stat-change down">+2</span>
+            </div>
+            <div class="stat-value">5</div>
+            <div class="stat-label">Cuotas vencidas</div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3>Créditos recientes</h3>
+              <a class="card-action">Ver todos →</a>
+            </div>
+            <div class="card-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Monto</th>
+                    <th>Tasa</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>María González</td>
+                    <td>$150,000</td>
+                    <td>24% anual</td>
+                    <td><span class="status-badge active">Al día</span></td>
+                  </tr>
+                  <tr>
+                    <td>Carlos Ruiz</td>
+                    <td>$85,000</td>
+                    <td>18% anual</td>
+                    <td><span class="status-badge active">Al día</span></td>
+                  </tr>
+                  <tr>
+                    <td>Ana Martínez</td>
+                    <td>$200,000</td>
+                    <td>22% anual</td>
+                    <td><span class="status-badge pending">Pendiente</span></td>
+                  </tr>
+                  <tr>
+                    <td>Roberto Díaz</td>
+                    <td>$50,000</td>
+                    <td>30% anual</td>
+                    <td><span class="status-badge overdue">Vencido</span></td>
+                  </tr>
+                  <tr>
+                    <td>Laura Sánchez</td>
+                    <td>$120,000</td>
+                    <td>20% anual</td>
+                    <td><span class="status-badge active">Al día</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Actividad reciente</h3>
+              <a class="card-action">Historial →</a>
+            </div>
+            <div class="card-body">
+              <div class="activity-list">
+                <div class="activity-item">
+                  <div class="activity-dot green"></div>
+                  <div>
+                    <div class="activity-text">Pago recibido de <strong>María González</strong> — $12,500</div>
+                    <div class="activity-time">Hace 25 minutos</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot gold"></div>
+                  <div>
+                    <div class="activity-text">Nuevo crédito aprobado: <strong>$85,000</strong> a Carlos Ruiz</div>
+                    <div class="activity-time">Hace 2 horas</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot blue"></div>
+                  <div>
+                    <div class="activity-text">Inversión renovada: Fondo <strong>Conservador A</strong></div>
+                    <div class="activity-time">Hace 5 horas</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot red"></div>
+                  <div>
+                    <div class="activity-text">Cuota vencida: <strong>Roberto Díaz</strong> — $4,200</div>
+                    <div class="activity-time">Hace 1 día</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot green"></div>
+                  <div>
+                    <div class="activity-text">Intereses acreditados: <strong>$8,320</strong></div>
+                    <div class="activity-time">Hace 2 días</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PLACEHOLDER PAGES -->
+      <section class="page-section" id="page-credits">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:1rem;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Módulo de Créditos</h3>
+          <p style="color:var(--text-muted); max-width:400px; margin:0 auto;">Gestión completa de créditos otorgados, cuotas, amortizaciones y seguimiento de pagos. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="page-investments">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:1rem;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Módulo de Inversiones</h3>
+          <p style="color:var(--text-muted); max-width:400px; margin:0 auto;">Administración de fondos de inversión, rendimientos y portafolio. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="page-clients">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:1rem;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Módulo de Clientes</h3>
+          <p style="color:var(--text-muted); max-width:400px; margin:0 auto;">Base de datos de clientes, historial crediticio y evaluación de riesgo. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="page-payments">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Módulo de Pagos</h3>
+          <p style="color:var(--text-muted);">Registro y seguimiento de pagos. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="page-interest">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Módulo de Intereses</h3>
+          <p style="color:var(--text-muted);">Cálculo y gestión de intereses. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="page-reports">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Módulo de Reportes</h3>
+          <p style="color:var(--text-muted);">Reportes financieros y exportación. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="page-settings">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Configuración</h3>
+          <p style="color:var(--text-muted);">Ajustes del sistema y preferencias. Próximamente.</p>
+        </div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ========== SUPER ADMIN PANEL ========== -->
+<div class="superadmin" id="superadmin">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="s-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="s-title">Capital<span>Flow</span></div>
+    </div>
+    <div class="sidebar-tenant">
+      <div class="tenant-label">Panel de control</div>
+      <div class="tenant-name">Super Administrador</div>
+      <div class="sa-role-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Control total del SaaS
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Gestión SaaS</div>
+      <div class="nav-item active" data-sapage="tenants">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
+        Empresas (Tenants)
+        <span class="nav-badge" id="tenantCount">0</span>
+      </div>
+      <div class="nav-item" data-sapage="overview">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Vista general
+      </div>
+      <div class="nav-item" data-sapage="billing">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Facturación
+      </div>
+
+      <div class="nav-section-title">Monitoreo</div>
+      <div class="nav-item" data-sapage="activity">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Actividad global
+      </div>
+      <div class="nav-item" data-sapage="logs">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Logs del sistema
+      </div>
+
+      <div class="nav-section-title">Configuración</div>
+      <div class="nav-item" data-sapage="sasettings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Ajustes SaaS
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar" style="background: linear-gradient(135deg, #4da3ff, #3b82f6);">SA</div>
+        <div class="user-info">
+          <div class="user-name" id="saUserName">Super Admin</div>
+          <div class="user-role">Propietario SaaS</div>
+        </div>
+        <button class="btn-logout" id="btnSaLogout" title="Cerrar sesión">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-btn" id="saMenuToggle" style="display:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div>
+          <h2 id="saPageTitle">Empresas (Tenants)</h2>
+          <div class="breadcrumb">
+            Super Admin <span>/</span> <span id="saBreadcrumb">Tenants</span>
+          </div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Crear nueva empresa" onclick="openCreateTenantModal()">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="topbar-btn" title="Notificaciones">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <!-- TENANTS PAGE -->
+      <section class="page-section active" id="sapage-tenants">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
+              </div>
+              <span class="stat-change up" id="saTotalTenants">0</span>
+            </div>
+            <div class="stat-value" id="saTotalTenantsValue">0</div>
+            <div class="stat-label">Empresas activas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon gold">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <span class="stat-change up">+18%</span>
+            </div>
+            <div class="stat-value" id="saTotalRevenue">$0</div>
+            <div class="stat-label">Ingresos mensuales (MRR)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <span class="stat-change up">+24</span>
+            </div>
+            <div class="stat-value" id="saTotalUsers">0</div>
+            <div class="stat-label">Usuarios totales</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon red">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <span class="stat-change down">1</span>
+            </div>
+            <div class="stat-value" id="saSuspended">0</div>
+            <div class="stat-label">Tenants suspendidos</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.5rem;">
+          <div class="card-header">
+            <h3>Empresas contratantes</h3>
+            <a class="card-action" onclick="openCreateTenantModal()">+ Nueva empresa</a>
+          </div>
+          <div class="card-body">
+            <div class="tenants-grid" id="tenantsGrid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OVERVIEW PAGE -->
+      <section class="page-section" id="sapage-overview">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Vista General del SaaS</h3>
+          <p style="color:var(--text-muted);">Métricas consolidadas de todos los tenants. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="sapage-billing">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Facturación</h3>
+          <p style="color:var(--text-muted);">Control de suscripciones y pagos de tenants. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="sapage-activity">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Actividad Global</h3>
+          <p style="color:var(--text-muted);">Log de actividad de todos los tenants. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="sapage-logs">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Logs del Sistema</h3>
+          <p style="color:var(--text-muted);">Registros técnicos del SaaS. Próximamente.</p>
+        </div></div>
+      </section>
+      <section class="page-section" id="sapage-sasettings">
+        <div class="card"><div class="card-body" style="text-align:center; padding:4rem;">
+          <h3 style="font-family:var(--font-display); margin-bottom:0.5rem;">Ajustes del SaaS</h3>
+          <p style="color:var(--text-muted);">Configuración global del sistema. Próximamente.</p>
+        </div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- CREATE TENANT MODAL -->
+<div class="modal-overlay" id="createTenantModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Nueva empresa (Tenant)</h3>
+      <button class="modal-close" onclick="closeCreateTenantModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="createTenantForm">
+        <div class="form-group">
+          <label>Nombre de la empresa</label>
+          <input type="text" id="newTenantCompany" placeholder="Ej: Finanzas del Sur S.A." required>
+        </div>
+        <div class="form-group">
+          <label>Identificador único (tenant ID)</label>
+          <div class="tenant-input-wrapper">
+            <span class="tenant-prefix">CF/</span>
+            <input type="text" id="newTenantId" placeholder="ej: finanzasdelsur" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Correo del administrador</label>
+          <input type="email" id="newTenantEmail" placeholder="admin@empresa.com" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña inicial</label>
+          <input type="text" id="newTenantPassword" placeholder="demo123" value="demo123" required>
+        </div>
+        <div class="form-group">
+          <label>Nombre del administrador</label>
+          <input type="text" id="newTenantAdmin" placeholder="Ej: Juan Pérez" required>
+        </div>
+        <div class="form-group">
+          <label>Plan</label>
+          <select id="newTenantPlan">
+            <option value="basic">Básico — $49/mes</option>
+            <option value="pro" selected>Profesional — $99/mes</option>
+            <option value="enterprise">Enterprise — $249/mes</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal cancel" onclick="closeCreateTenantModal()">Cancelar</button>
+      <button class="btn-modal confirm" onclick="createTenant()">Crear empresa</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========================================
+   CapitalFlow SaaS — App Logic
+   ======================================== */
+
+// --- TENANT DATA (each tenant has their own data) ---
+const TENANT_DATA = {
+  'miempresa': {
+    credits: [
+      { client: 'María González', amount: '$150,000', rate: '24% anual', status: 'active' },
+      { client: 'Carlos Ruiz', amount: '$85,000', rate: '18% anual', status: 'active' },
+      { client: 'Ana Martínez', amount: '$200,000', rate: '22% anual', status: 'pending' },
+      { client: 'Roberto Díaz', amount: '$50,000', rate: '30% anual', status: 'overdue' },
+      { client: 'Laura Sánchez', amount: '$120,000', rate: '20% anual', status: 'active' },
+    ],
+    stats: { capital: '$2,450,000', capitalChange: '+12.5%', interest: '$185,400', interestChange: '+8.3%', activeCredits: '47', creditsChange: '+3', overdue: '5', overdueChange: '+2' },
+    activities: [
+      { text: 'Pago recibido de <strong>María González</strong> — $12,500', time: 'Hace 25 minutos', color: 'green' },
+      { text: 'Nuevo crédito aprobado: <strong>$85,000</strong> a Carlos Ruiz', time: 'Hace 2 horas', color: 'gold' },
+      { text: 'Inversión renovada: Fondo <strong>Conservador A</strong>', time: 'Hace 5 horas', color: 'blue' },
+      { text: 'Cuota vencida: <strong>Roberto Díaz</strong> — $4,200', time: 'Hace 1 día', color: 'red' },
+      { text: 'Intereses acreditados: <strong>$8,320</strong>', time: 'Hace 2 días', color: 'green' },
+    ]
+  },
+  'inversiones': {
+    credits: [
+      { client: 'Pedro Herrera', amount: '$300,000', rate: '15% anual', status: 'active' },
+      { client: 'Sofía Vargas', amount: '$175,000', rate: '20% anual', status: 'active' },
+      { client: 'Miguel Torres', amount: '$90,000', rate: '25% anual', status: 'pending' },
+      { client: 'Elena Ríos', amount: '$420,000', rate: '12% anual', status: 'active' },
+    ],
+    stats: { capital: '$5,800,000', capitalChange: '+22.1%', interest: '$340,000', interestChange: '+15.7%', activeCredits: '83', creditsChange: '+7', overdue: '2', overdueChange: '-1' },
+    activities: [
+      { text: 'Pago recibido de <strong>Pedro Herrera</strong> — $25,000', time: 'Hace 1 hora', color: 'green' },
+      { text: 'Nuevo crédito aprobado: <strong>$420,000</strong> a Elena Ríos', time: 'Hace 3 horas', color: 'gold' },
+      { text: 'Inversión nueva: Fondo <strong>Alto Rendimiento B</strong>', time: 'Hace 6 horas', color: 'blue' },
+      { text: 'Intereses acreditados: <strong>$18,750</strong>', time: 'Hace 1 día', color: 'green' },
+    ]
+  },
+  'demo': {
+    credits: [
+      { client: 'Cliente Demo 1', amount: '$50,000', rate: '20% anual', status: 'active' },
+      { client: 'Cliente Demo 2', amount: '$30,000', rate: '24% anual', status: 'pending' },
+    ],
+    stats: { capital: '$80,000', capitalChange: '+5%', interest: '$4,200', interestChange: '+3.2%', activeCredits: '2', creditsChange: '+1', overdue: '0', overdueChange: '0' },
+    activities: [
+      { text: 'Bienvenido a <strong>CapitalFlow Demo</strong>', time: 'Sesión de prueba', color: 'gold' },
+      { text: 'Crédito creado: <strong>$50,000</strong> a Cliente Demo 1', time: 'Hace 1 hora', color: 'green' },
+      { text: 'Este es un entorno de demostración', time: 'Datos de ejemplo', color: 'blue' },
+    ]
+  }
+};
+
+// --- TENANTS REGISTRY (managed by Super Admin) ---
+let TENANTS_REGISTRY = [
+  { id: 'miempresa', company: 'Mi Empresa S.A.', email: 'admin@miempresa.com', password: 'demo123', admin: 'Carlos Mendoza', plan: 'pro', status: 'online', credits: 47, capital: '$2.4M', created: '2024-11-15' },
+  { id: 'inversiones', company: 'Inversiones del Norte', email: 'admin@inversiones.com', password: 'demo123', admin: 'Ana López', plan: 'enterprise', status: 'online', credits: 83, capital: '$5.8M', created: '2024-09-22' },
+  { id: 'demo', company: 'CapitalFlow Demo', email: 'demo@capitalflow.com', password: 'demo123', admin: 'Usuario Demo', plan: 'basic', status: 'trial', credits: 2, capital: '$80K', created: '2025-01-10' },
+];
+
+// Super Admin credentials
+const SUPER_ADMIN = { email: 'admin@capitalflow.com', password: 'admin123', name: 'Super Admin' };
+
+let currentSession = null;
+let loginMode = 'tenant'; // 'tenant' or 'superadmin'
+
+// --- LOGIN MODE TOGGLE ---
+function setLoginMode(mode) {
+  loginMode = mode;
+  document.querySelectorAll('.login-mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  const tenantLabel = document.getElementById('tenantLabel');
+  const tenantPrefix = document.getElementById('tenantPrefix');
+  const tenantInput = document.getElementById('tenantId');
+  const tenantGroup = document.getElementById('tenantGroup');
+
+  if (mode === 'superadmin') {
+    tenantGroup.style.display = 'none';
+    tenantInput.removeAttribute('required');
+    document.getElementById('loginEmail').placeholder = 'admin@capitalflow.com';
+  } else {
+    tenantGroup.style.display = 'block';
+    tenantInput.setAttribute('required', '');
+    tenantLabel.textContent = 'Identificador de empresa';
+    tenantPrefix.textContent = 'CF/';
+    tenantInput.placeholder = 'ej: miempresa';
+    document.getElementById('loginEmail').placeholder = 'admin@empresa.com';
+  }
+  document.getElementById('loginError').classList.remove('show');
+}
+
+// --- LOGIN ---
+const loginPage = document.getElementById('loginPage');
+const dashboard = document.getElementById('dashboard');
+const superadmin = document.getElementById('superadmin');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+const loginErrorText = document.getElementById('loginErrorText');
+const btnLogin = document.getElementById('btnLogin');
+
+loginForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  loginError.classList.remove('show');
+
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  if (loginMode === 'superadmin') {
+    // Super Admin login
+    if (email !== SUPER_ADMIN.email) { showError('Correo de Super Admin no reconocido.'); return; }
+    if (password !== SUPER_ADMIN.password) { showError('Contraseña incorrecta.'); return; }
+
+    btnLogin.disabled = true;
+    btnLogin.innerHTML = '<span class="spinner"></span>';
+    setTimeout(() => {
+      currentSession = { role: 'superadmin', name: SUPER_ADMIN.name, email };
+      enterSuperAdmin();
+      btnLogin.disabled = false;
+      btnLogin.innerHTML = 'Acceder al sistema';
+    }, 1000);
+  } else {
+    // Tenant login
+    const tenant = document.getElementById('tenantId').value.trim().toLowerCase();
+    const tenantRecord = TENANTS_REGISTRY.find(t => t.id === tenant);
+    if (!tenantRecord) { showError('Identificador no encontrado. Prueba: demo, miempresa, inversiones'); return; }
+    if (tenantRecord.email !== email) { showError('El correo no coincide con esta empresa.'); return; }
+    if (tenantRecord.password !== password) { showError('Contraseña incorrecta.'); return; }
+    if (tenantRecord.status === 'suspended') { showError('Esta empresa tiene el acceso suspendido. Contacta al administrador.'); return; }
+
+    btnLogin.disabled = true;
+    btnLogin.innerHTML = '<span class="spinner"></span>';
+    setTimeout(() => {
+      currentSession = { role: 'tenant', tenant, ...tenantRecord };
+      enterTenantDashboard();
+      btnLogin.disabled = false;
+      btnLogin.innerHTML = 'Acceder al sistema';
+    }, 1200);
+  }
+});
+
+function showError(msg) {
+  loginErrorText.textContent = msg;
+  loginError.classList.add('show');
+}
+
+// --- ENTER TENANT DASHBOARD ---
+function enterTenantDashboard() {
+  loginPage.classList.add('hidden');
+  setTimeout(() => {
+    dashboard.classList.add('active');
+    document.getElementById('tenantDisplay').textContent = 'CF/ ' + currentSession.tenant;
+    document.getElementById('userName').textContent = currentSession.admin;
+    document.getElementById('userAvatar').textContent = currentSession.admin.split(' ').map(w => w[0]).join('').substring(0, 2);
+    populateTenantData(currentSession.tenant);
+  }, 300);
+}
+
+function populateTenantData(tenantId) {
+  const data = TENANT_DATA[tenantId];
+  if (!data) return;
+
+  // Stats
+  const statValues = document.querySelectorAll('#page-dashboard .stat-value');
+  const statChanges = document.querySelectorAll('#page-dashboard .stat-change');
+  if (statValues.length >= 4) {
+    statValues[0].textContent = data.stats.capital;
+    statValues[1].textContent = data.stats.interest;
+    statValues[2].textContent = data.stats.activeCredits;
+    statValues[3].textContent = data.stats.overdue;
+    statChanges[0].textContent = data.stats.capitalChange;
+    statChanges[1].textContent = data.stats.interestChange;
+    statChanges[2].textContent = data.stats.creditsChange;
+    statChanges[3].textContent = data.stats.overdueChange;
+  }
+
+  // Credits table
+  const tbody = document.querySelector('#page-dashboard .data-table tbody');
+  if (tbody) {
+    tbody.innerHTML = data.credits.map(c => `
+      <tr>
+        <td>${c.client}</td>
+        <td>${c.amount}</td>
+        <td>${c.rate}</td>
+        <td><span class="status-badge ${c.status}">${c.status === 'active' ? 'Al día' : c.status === 'pending' ? 'Pendiente' : 'Vencido'}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // Activity
+  const actList = document.querySelector('#page-dashboard .activity-list');
+  if (actList) {
+    actList.innerHTML = data.activities.map((a, i) => `
+      <div class="activity-item">
+        <div class="activity-dot ${a.color}"></div>
+        <div>
+          <div class="activity-text">${a.text}</div>
+          <div class="activity-time">${a.time}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+// --- ENTER SUPER ADMIN ---
+function enterSuperAdmin() {
+  loginPage.classList.add('hidden');
+  setTimeout(() => {
+    superadmin.classList.add('active');
+    document.getElementById('saUserName').textContent = currentSession.name;
+    renderTenantsGrid();
+    updateSuperAdminStats();
+  }, 300);
+}
+
+function renderTenantsGrid() {
+  const grid = document.getElementById('tenantsGrid');
+  const colors = ['c1', 'c2', 'c3', 'c4', 'c5'];
+  grid.innerHTML = TENANTS_REGISTRY.map((t, i) => {
+    const initials = t.company.split(' ').map(w => w[0]).join('').substring(0, 2);
+    const statusLabel = t.status === 'online' ? 'Activo' : t.status === 'trial' ? 'Trial' : 'Suspendido';
+    return `
+    <div class="tenant-card">
+      <div class="tenant-card-header">
+        <div class="tenant-card-info">
+          <div class="tenant-card-avatar ${colors[i % colors.length]}">${initials}</div>
+          <div>
+            <div class="tenant-card-name">${t.company}</div>
+            <div class="tenant-card-id">CF/${t.id}</div>
+          </div>
+        </div>
+        <span class="tenant-status ${t.status}">${statusLabel}</span>
+      </div>
+      <div class="tenant-card-stats">
+        <div class="tenant-stat">
+          <div class="tenant-stat-value">${t.credits}</div>
+          <div class="tenant-stat-label">Créditos</div>
+        </div>
+        <div class="tenant-stat">
+          <div class="tenant-stat-value">${t.capital}</div>
+          <div class="tenant-stat-label">Capital</div>
+        </div>
+        <div class="tenant-stat">
+          <div class="tenant-stat-value">${t.plan === 'enterprise' ? 'Ent' : t.plan === 'pro' ? 'Pro' : 'Bás'}</div>
+          <div class="tenant-stat-label">Plan</div>
+        </div>
+      </div>
+      <div class="tenant-card-footer">
+        <button class="btn-tenant-action" onclick="toggleTenantStatus('${t.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          ${t.status === 'suspended' ? 'Activar' : 'Suspender'}
+        </button>
+        <button class="btn-tenant-action primary" onclick="loginAsTenant('${t.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Acceder como
+        </button>
+      </div>
+    </div>
+    `;
+  }).join('');
+  document.getElementById('tenantCount').textContent = TENANTS_REGISTRY.length;
+}
+
+function updateSuperAdminStats() {
+  const active = TENANTS_REGISTRY.filter(t => t.status !== 'suspended').length;
+  const suspended = TENANTS_REGISTRY.filter(t => t.status === 'suspended').length;
+  const planPrices = { basic: 49, pro: 99, enterprise: 249 };
+  const mrr = TENANTS_REGISTRY.reduce((sum, t) => sum + (planPrices[t.plan] || 0), 0);
+
+  document.getElementById('saTotalTenants').textContent = '+' + active;
+  document.getElementById('saTotalTenantsValue').textContent = active;
+  document.getElementById('saTotalRevenue').textContent = '$' + mrr.toLocaleString();
+  document.getElementById('saTotalUsers').textContent = TENANTS_REGISTRY.length * 3;
+  document.getElementById('saSuspended').textContent = suspended;
+}
+
+function toggleTenantStatus(tenantId) {
+  const t = TENANTS_REGISTRY.find(t => t.id === tenantId);
+  if (t) {
+    t.status = t.status === 'suspended' ? 'online' : 'suspended';
+    renderTenantsGrid();
+    updateSuperAdminStats();
+  }
+}
+
+function loginAsTenant(tenantId) {
+  const t = TENANTS_REGISTRY.find(t => t.id === tenantId);
+  if (t && t.status !== 'suspended') {
+    // Exit super admin, enter as tenant
+    superadmin.classList.remove('active');
+    currentSession = { role: 'tenant', tenant: t.id, ...t };
+    setTimeout(() => {
+      dashboard.classList.add('active');
+      document.getElementById('tenantDisplay').textContent = 'CF/ ' + t.id;
+      document.getElementById('userName').textContent = t.admin;
+      document.getElementById('userAvatar').textContent = t.admin.split(' ').map(w => w[0]).join('').substring(0, 2);
+      populateTenantData(t.id);
+    }, 200);
+  }
+}
+
+// --- CREATE TENANT MODAL ---
+function openCreateTenantModal() {
+  document.getElementById('createTenantModal').classList.add('show');
+}
+function closeCreateTenantModal() {
+  document.getElementById('createTenantModal').classList.remove('show');
+  document.getElementById('createTenantForm').reset();
+}
+function createTenant() {
+  const id = document.getElementById('newTenantId').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+  const company = document.getElementById('newTenantCompany').value.trim();
+  const email = document.getElementById('newTenantEmail').value.trim();
+  const password = document.getElementById('newTenantPassword').value;
+  const admin = document.getElementById('newTenantAdmin').value.trim();
+  const plan = document.getElementById('newTenantPlan').value;
+
+  if (!id || !company || !email || !admin) { alert('Completa todos los campos.'); return; }
+  if (TENANTS_REGISTRY.find(t => t.id === id)) { alert('El identificador CF/' + id + ' ya existe.'); return; }
+
+  TENANTS_REGISTRY.push({
+    id, company, email, password, admin, plan,
+    status: 'online', credits: 0, capital: '$0', created: new Date().toISOString().split('T')[0]
+  });
+
+  // Create empty tenant data
+  TENANT_DATA[id] = {
+    credits: [],
+    stats: { capital: '$0', capitalChange: '0%', interest: '$0', interestChange: '0%', activeCredits: '0', creditsChange: '0', overdue: '0', overdueChange: '0' },
+    activities: [{ text: 'Empresa creada. <strong>¡Bienvenido a CapitalFlow!</strong>', time: 'Ahora', color: 'gold' }]
+  };
+
+  closeCreateTenantModal();
+  renderTenantsGrid();
+  updateSuperAdminStats();
+}
+
+// --- LOGOUT ---
+document.getElementById('btnLogout').addEventListener('click', exitToLogin);
+document.getElementById('btnSaLogout').addEventListener('click', exitToLogin);
+
+function exitToLogin() {
+  dashboard.classList.remove('active');
+  superadmin.classList.remove('active');
+  currentSession = null;
+  setTimeout(() => {
+    loginPage.classList.remove('hidden');
+    loginForm.reset();
+    loginError.classList.remove('show');
+    setLoginMode('tenant');
+  }, 300);
+}
+
+// --- TENANT NAVIGATION ---
+const navItems = document.querySelectorAll('#sidebar .nav-item[data-page]');
+const pageSections = document.querySelectorAll('#dashboard .page-section');
+const pageTitle = document.getElementById('pageTitle');
+const breadcrumbPage = document.getElementById('breadcrumbPage');
+
+const pageTitles = {
+  dashboard: 'Dashboard', credits: 'Créditos', investments: 'Inversiones',
+  clients: 'Clientes', payments: 'Pagos', interest: 'Intereses',
+  reports: 'Reportes', settings: 'Configuración',
+};
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => navigateTo(item.dataset.page));
+});
+
+function navigateTo(page) {
+  navItems.forEach(n => n.classList.remove('active'));
+  document.querySelector(`#sidebar .nav-item[data-page="${page}"]`)?.classList.add('active');
+  pageSections.forEach(s => s.classList.remove('active'));
+  document.getElementById(`page-${page}`)?.classList.add('active');
+  const title = pageTitles[page] || page;
+  pageTitle.textContent = title;
+  breadcrumbPage.textContent = title;
+  window.location.hash = page;
+}
+
+// --- SUPER ADMIN NAVIGATION ---
+const saNavItems = document.querySelectorAll('.superadmin .nav-item[data-sapage]');
+const saPageSections = document.querySelectorAll('.superadmin .page-section');
+const saPageTitle = document.getElementById('saPageTitle');
+const saBreadcrumb = document.getElementById('saBreadcrumb');
+
+const saPageTitles = {
+  tenants: 'Tenants', overview: 'Vista General', billing: 'Facturación',
+  activity: 'Actividad Global', logs: 'Logs del Sistema', sasettings: 'Ajustes SaaS',
+};
+
+saNavItems.forEach(item => {
+  item.addEventListener('click', () => navigateSaTo(item.dataset.sapage));
+});
+
+function navigateSaTo(page) {
+  saNavItems.forEach(n => n.classList.remove('active'));
+  document.querySelector(`.superadmin .nav-item[data-sapage="${page}"]`)?.classList.add('active');
+  saPageSections.forEach(s => s.classList.remove('active'));
+  document.getElementById(`sapage-${page}`)?.classList.add('active');
+  const title = saPageTitles[page] || page;
+  saPageTitle.textContent = title;
+  saBreadcrumb.textContent = title;
+}
+
+// --- RESPONSIVE ---
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.getElementById('sidebar');
+const saMenuToggle = document.getElementById('saMenuToggle');
+
+function checkResponsive() {
+  const isMobile = window.innerWidth <= 768;
+  menuToggle.style.display = isMobile ? 'flex' : 'none';
+  saMenuToggle.style.display = isMobile ? 'flex' : 'none';
+  if (!isMobile) sidebar.classList.remove('open');
+}
+menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+saMenuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+window.addEventListener('resize', checkResponsive);
+checkResponsive();
+
+// Close modal on overlay click
+document.getElementById('createTenantModal').addEventListener('click', function(e) {
+  if (e.target === this) closeCreateTenantModal();
+});
+</script>
+</body>
+</html>
